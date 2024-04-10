@@ -142,6 +142,7 @@ services:
       REACT_APP_WIDGET_EMBED_PATH: ${WIDGET_EMBED_PATH}
       REACT_APP_DOCKER_HOSTED_ENV: 'true'
       REACT_APP_WS_URL: ${REACT_APP_WS_URL}
+      IS_MULTI_TENANCY_ENABLED: 'true'
     ports:
       - 4200:4200
   widget:
