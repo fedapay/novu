@@ -74,6 +74,7 @@
     "@novu/getstream": "^0.24.1",
     "@novu/grafana-on-call": "^0.24.1",
     "@novu/gupshup": "^0.24.1",
+    "@novu/lam": "^0.24.1",
     "@novu/infobip": "^0.24.1",
     "@novu/isend-sms": "^0.24.1",
     "@novu/kannel": "^0.24.1",

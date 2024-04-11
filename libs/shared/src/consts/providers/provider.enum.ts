@@ -11,10 +11,12 @@ export enum CredentialsKeyEnum {
   Secure = 'secure',
   Region = 'region',
   AccountSid = 'accountSid',
+  AccountId = 'accountId',
   MessageProfileId = 'messageProfileId',
   Token = 'token',
   From = 'from',
   SenderName = 'senderName',
+  Sender = 'sender',
   ContentType = 'contentType',
   ApplicationId = 'applicationId',
   ClientId = 'clientId',
@@ -100,6 +102,7 @@ export enum SmsProviderIdEnum {
   AzureSms = 'azure-sms',
   RingCentral = 'ring-central',
   BrevoSms = 'brevo-sms',
+  Lam = 'lam',
 }
 
 export enum ChatProviderIdEnum {

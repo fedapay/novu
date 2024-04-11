@@ -9,10 +9,12 @@ export interface ICredentials {
   secure?: boolean;
   region?: string;
   accountSid?: string;
+  accountId?: string;
   messageProfileId?: string;
   token?: string;
   from?: string;
   senderName?: string;
+  sender?: string;
   contentType?: string;
   applicationId?: string;
   clientId?: string;

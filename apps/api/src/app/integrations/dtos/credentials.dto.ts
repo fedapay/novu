@@ -58,6 +58,11 @@ export class CredentialsDto implements ICredentials {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  accountId?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
   messageProfileId?: string;
 
   @ApiPropertyOptional()
@@ -74,6 +79,11 @@ export class CredentialsDto implements ICredentials {
   @IsString()
   @IsOptional()
   senderName?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  sender?: string;
 
   @ApiPropertyOptional()
   @IsString()

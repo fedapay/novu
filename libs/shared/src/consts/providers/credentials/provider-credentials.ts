@@ -1104,3 +1104,24 @@ export const brevoSmsConfig: IConfigCredentials[] = [
   },
   ...smsConfigBase,
 ];
+
+export const lamConfig: IConfigCredentials[] = [
+  {
+    key: CredentialsKeyEnum.AccountId,
+    displayName: 'Account id',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.Sender,
+    displayName: 'Sender',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.Password,
+    displayName: 'Password',
+    type: 'string',
+    required: true,
+  },
+];

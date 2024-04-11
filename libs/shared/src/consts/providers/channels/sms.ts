@@ -28,6 +28,7 @@ import {
   iSendSmsConfig,
   ringCentralConfig,
   brevoSmsConfig,
+  lamConfig,
 } from '../credentials';
 import { SmsProviderIdEnum } from '../provider.enum';
 
@@ -270,5 +271,13 @@ export const smsProviders: IProviderConfig[] = [
     credentials: brevoSmsConfig,
     docReference: 'https://developers.brevo.com/reference/sendtransacsms',
     logoFileName: { light: 'brevo.svg', dark: 'brevo.svg' },
+  },
+  {
+    id: SmsProviderIdEnum.Lam,
+    displayName: 'Lam',
+    channel: ChannelTypeEnum.SMS,
+    credentials: lamConfig,
+    docReference: 'https://developers.lafricamobile.com/docs/sms',
+    logoFileName: { light: 'lam.png', dark: 'lam.png' },
   },
 ];
