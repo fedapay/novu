@@ -38,6 +38,8 @@ export class MessageTemplateEntity implements IMessageTemplate {
 
   title?: string;
 
+  payload?: string;
+
   name?: string;
 
   stepId?: string;

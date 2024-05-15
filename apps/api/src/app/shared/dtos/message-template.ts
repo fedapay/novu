@@ -20,6 +20,9 @@ export class MessageTemplate {
   content: string | IEmailBlock[];
 
   @IsOptional()
+  payload?: string;
+
+  @IsOptional()
   contentType?: MessageTemplateContentType;
 
   @IsOptional()

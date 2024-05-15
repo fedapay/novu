@@ -18,7 +18,7 @@ import { useTemplateEditorForm } from './TemplateEditorFormProvider';
 import { InputVariables } from './InputVariables';
 import { InputVariablesForm } from './InputVariablesForm';
 
-const templateFields = ['content', 'title'];
+const templateFields = ['content', 'title', 'payload'];
 
 const PREVIEW = 'Preview';
 const INPUTS = 'Inputs';
@@ -83,6 +83,22 @@ export function TemplatePushEditor() {
                 render={({ field }) => (
                   <Stack spacing={8} data-test-id="push-content-container">
                     <Text weight="bold">Message</Text>
+                    <CustomCodeEditor
+                      value={(field.value as string) || ''}
+                      onChange={(value) => {
+                        handleContentChange(value, field.onChange);
+                      }}
+                    />
+                  </Stack>
+                )}
+              />
+              <Controller
+                name={`${stepFormPath}.template.payload` as any}
+                defaultValue=""
+                control={control}
+                render={({ field }) => (
+                  <Stack spacing={8} data-test-id="push-payload-container">
+                    <Text weight="bold">Data</Text>
                     <CustomCodeEditor
                       value={(field.value as string) || ''}
                       onChange={(value) => {

@@ -33,6 +33,9 @@ export class CreateMessageTemplateCommand extends EnvironmentWithUserCommand {
   contentType?: MessageTemplateContentType;
 
   @IsOptional()
+  payload?: string;
+
+  @IsOptional()
   @ValidateNested()
   cta?: IMessageCTA;
 

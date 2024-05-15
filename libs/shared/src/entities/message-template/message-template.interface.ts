@@ -24,6 +24,7 @@ export interface IMessageTemplate {
   subject?: string;
   name?: string;
   title?: string;
+  payload?: string;
   type: StepTypeEnum;
   contentType?: MessageTemplateContentType;
   content: string | IEmailBlock[];

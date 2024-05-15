@@ -38,6 +38,10 @@ export class UpdateMessageTemplate {
         command.contentType === 'editor' ? sanitizeMessageContent(command.content) : command.content;
     }
 
+    if (command.payload !== null || command.payload !== undefined) {
+      updatePayload.payload = command.payload;
+    }
+
     if (command.variables) {
       updatePayload.variables = UpdateMessageTemplate.mapVariables(command.variables);
     }

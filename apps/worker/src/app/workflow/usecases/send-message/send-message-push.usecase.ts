@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { ModuleRef } from '@nestjs/core';
+import { merge } from 'lodash';
 
 import {
   MessageRepository,
@@ -89,6 +90,7 @@ export class SendMessagePush extends SendMessageBase {
     const data = this.getCompilePayload(command.compileContext);
     let content = '';
     let title = '';
+    let payload = '';
 
     try {
       if (!command.chimeraData) {
@@ -102,6 +104,13 @@ export class SendMessagePush extends SendMessageBase {
         title = await this.compileTemplate.execute(
           CompileTemplateCommand.create({
             template: step.template?.title as string,
+            data,
+          })
+        );
+
+        payload = await this.compileTemplate.execute(
+          CompileTemplateCommand.create({
+            template: step.template?.payload as string,
             data,
           })
         );
@@ -147,7 +156,7 @@ export class SendMessagePush extends SendMessageBase {
       const overrides = command.overrides[integration.providerId] || {};
       const target = (overrides as { deviceTokens?: string[] }).deviceTokens || deviceTokens;
 
-      const message = await this.createMessage(command, integration, title, content, target, overrides);
+      const message = await this.createMessage(command, integration, title, content, payload, target, overrides);
 
       for (const deviceToken of target) {
         const result = await this.sendMessage(
@@ -293,7 +302,7 @@ export class SendMessagePush extends SendMessageBase {
         target: [deviceToken],
         title: (chimeraOutputs as IChimeraPushResponse)?.subject || title,
         content: (chimeraOutputs as IChimeraPushResponse)?.body || content,
-        payload: command.payload,
+        payload: message.payload,
         overrides,
         subscriber,
         step,
@@ -337,6 +346,7 @@ export class SendMessagePush extends SendMessageBase {
     integration: IntegrationEntity,
     title: string,
     content: string,
+    payload: string,
     deviceTokens: string[],
     overrides: object
   ): Promise<MessageEntity> {
@@ -352,7 +362,7 @@ export class SendMessagePush extends SendMessageBase {
       deviceTokens,
       content: this.storeContent() ? content : null,
       title,
-      payload: command.payload as never,
+      payload: merge({}, JSON.parse(payload.replace(/'/g, '"')), command.payload) as never,
       overrides: overrides as never,
       providerId: integration.providerId,
       _jobId: command.jobId,

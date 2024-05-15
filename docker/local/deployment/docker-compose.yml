@@ -125,7 +125,7 @@ services:
     ports:
       - '3002:3002'
   web:
-    image: 'ghcr.io/novuhq/novu/web:0.24.0'
+    image: 'fedapay-novu-web:1.0.1'
     depends_on:
       - api
       - worker

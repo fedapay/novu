@@ -36,6 +36,7 @@ export class CreateMessageTemplate {
       name: command.name,
       variables: command.variables ? UpdateMessageTemplate.mapVariables(command.variables) : undefined,
       content: command.contentType === 'editor' ? sanitizeMessageContent(command.content) : command.content,
+      payload: command.payload,
       contentType: command.contentType,
       subject: command.subject,
       title: command.title,

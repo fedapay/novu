@@ -34,6 +34,7 @@ const messageTemplateSchema = new Schema<MessageTemplateDBModel>(
     content: Schema.Types.Mixed,
     contentType: Schema.Types.String,
     title: Schema.Types.String,
+    payload: Schema.Types.String,
     cta: {
       type: {
         type: Schema.Types.String,
