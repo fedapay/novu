@@ -362,7 +362,9 @@ export class SendMessagePush extends SendMessageBase {
       deviceTokens,
       content: this.storeContent() ? content : null,
       title,
-      payload: merge({}, JSON.parse(payload.replace(/'/g, '"')), command.payload) as never,
+      payload: (payload.trim() !== ''
+        ? merge({}, JSON.parse(payload.replace(/'/g, '"')), command.payload)
+        : command.payload) as never,
       overrides: overrides as never,
       providerId: integration.providerId,
       _jobId: command.jobId,
