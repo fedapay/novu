@@ -1,15 +1,15 @@
 import { Badge, Text } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api/api.client';
-import { useEnvController } from '../../../hooks';
-import { Tooltip, Popover } from '@novu/design-system';
+import { useEnvironment } from '../../../hooks';
+import { Popover } from '@novu/design-system';
 import { useDisclosure } from '@mantine/hooks';
-import { IS_DOCKER_HOSTED } from '@novu/shared-web';
+import { IS_DOCKER_HOSTED } from '../../../config';
 
 export function EchoStatus() {
   const [opened, { close, open }] = useDisclosure(false);
 
-  const { environment } = useEnvController();
+  const { environment } = useEnvironment();
   const echoEnabled = !!environment?.echo?.url && !IS_DOCKER_HOSTED;
   const { data, error, isInitialLoading } = useQuery<{
     status: 'ok' | 'down';
@@ -60,7 +60,7 @@ function PopoverContent({ url, status }) {
     return (
       <>
         <Text>
-          <b>Status</b>: {status === 'ok' ? 'Echo Is Up' : 'Echo is Down'}
+          <b>Status</b>: {status === 'ok' ? 'Connected to your application' : 'Disconnected from your application'}
         </Text>
         <Text>
           <b>URL</b>: {url}

@@ -3,7 +3,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Grid, SegmentedControl, Stack, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
 
-import { useEnvController, useHasActiveIntegrations, useVariablesManager } from '../../../../hooks';
+import { useEnvironment, useHasActiveIntegrations, useVariablesManager } from '../../../../hooks';
 import { useStepFormPath } from '../../hooks/useStepFormPath';
 import { StepSettings } from '../../workflow/SideBar/StepSettings';
 import type { IForm } from '../formTypes';
@@ -15,8 +15,7 @@ import { EditVariablesModal } from '../EditVariablesModal';
 import { VariableManagementButton } from '../VariableManagementButton';
 import { useEditTemplateContent } from '../../hooks/useEditTemplateContent';
 import { useTemplateEditorForm } from '../TemplateEditorFormProvider';
-import { colors, When } from '@novu/design-system';
-import { InputVariables } from '../InputVariables';
+import { When } from '@novu/design-system';
 import { InputVariablesForm } from '../InputVariablesForm';
 
 const templateFields = ['content'];
@@ -35,8 +34,7 @@ export function TemplateChatEditor() {
   const [inputVariables, setInputVariables] = useState();
   const [editVariablesModalOpened, setEditVariablesModalOpen] = useState(false);
   const { template } = useTemplateEditorForm();
-  const { chimera } = useEnvController({}, template?.chimera);
-  const [activeTab, setActiveTab] = useState<string>(PREVIEW);
+  const { bridge } = useEnvironment({}, template?.bridge);
   const theme = useMantineTheme();
 
   return (
@@ -55,9 +53,9 @@ export function TemplateChatEditor() {
                   openEditVariablesModal={() => {
                     setEditVariablesModalOpen(true);
                   }}
-                  label={chimera ? 'Input variables' : undefined}
+                  label={bridge ? 'Input variables' : undefined}
                 />
-                <When truthy={!chimera}>
+                <When truthy={!bridge}>
                   <CustomCodeEditor
                     value={(field.value as string) || ''}
                     onChange={(value) => {
@@ -65,7 +63,7 @@ export function TemplateChatEditor() {
                     }}
                   />
                 </When>
-                <When truthy={chimera}>
+                <When truthy={bridge}>
                   <InputVariablesForm onChange={setInputVariables} />
                 </When>
               </Stack>

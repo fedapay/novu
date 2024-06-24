@@ -13,6 +13,7 @@ before(async () => {
    */
   chai.config.truncateThreshold = 0;
   await testServer.create(await bootstrap());
+
   await dalService.connect(process.env.MONGO_URL);
 });
 

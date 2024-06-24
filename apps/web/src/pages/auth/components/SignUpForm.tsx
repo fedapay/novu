@@ -3,18 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { Center } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
 import { passwordConstraints, UTM_CAMPAIGN_QUERY_PARAM } from '@novu/shared';
 import type { IResponseError } from '@novu/shared';
 import { PasswordInput, Button, colors, Input, Text, Checkbox } from '@novu/design-system';
 
-import { useAuthContext } from '../../../components/providers/AuthProvider';
+import { useAuth } from '../../../hooks/useAuth';
 import { api } from '../../../api/api.client';
-import { applyToken, useVercelParams } from '../../../hooks';
+import { useVercelParams } from '../../../hooks';
 import { useAcceptInvite } from './useAcceptInvite';
 import { PasswordRequirementPopover } from './PasswordRequirementPopover';
-import { buildGithubLink, buildVercelGithubLink } from './gitHubUtils';
-import { ROUTES } from '../../../constants/routes.enum';
+import { ROUTES } from '../../../constants/routes';
 import { OAuth } from './OAuth';
 
 type SignUpFormProps = {
@@ -31,14 +29,10 @@ export type SignUpFormInputType = {
 export function SignUpForm({ invitationToken, email }: SignUpFormProps) {
   const navigate = useNavigate();
 
-  const { setToken } = useAuthContext();
-  const { isLoading: loadingAcceptInvite, submitToken } = useAcceptInvite();
-  const { isFromVercel, code, next, configurationId } = useVercelParams();
-  const vercelQueryParams = `code=${code}&next=${next}&configurationId=${configurationId}`;
-  const loginLink = isFromVercel ? `/auth/login?${vercelQueryParams}` : ROUTES.AUTH_LOGIN;
-  const githubLink = isFromVercel
-    ? buildVercelGithubLink({ code, next, configurationId })
-    : buildGithubLink({ invitationToken });
+  const { login } = useAuth();
+  const { isLoading: isAcceptInviteLoading, acceptInvite } = useAcceptInvite();
+  const { params, isFromVercel } = useVercelParams();
+  const loginLink = isFromVercel ? `${ROUTES.AUTH_LOGIN}?${params.toString()}` : ROUTES.AUTH_LOGIN;
 
   const { isLoading, mutateAsync, isError, error } = useMutation<
     { token: string },
@@ -52,41 +46,27 @@ export function SignUpForm({ invitationToken, email }: SignUpFormProps) {
   >((data) => api.post('/v1/auth/register', data));
 
   const onSubmit = async (data) => {
+    const [firstName, lastName] = data?.fullName.trim().split(' ');
     const itemData = {
-      firstName: data.fullName.split(' ')[0],
-      lastName: data.fullName.split(' ')[1],
+      firstName,
+      lastName,
       email: data.email,
       password: data.password,
     };
 
-    if (!itemData.lastName) {
-      showNotification({
-        message: 'Please write your full name including last name',
-        color: 'red',
-      });
-
-      return;
-    }
     const response = await mutateAsync(itemData);
-
-    /**
-     * We need to call the applyToken to avoid a race condition for accept invite
-     * To get the correct token when sending the request
-     */
     const token = (response as any).token;
-    applyToken(token);
+    await login(token);
 
     if (invitationToken) {
-      submitToken(token, invitationToken);
-
-      return true;
+      const updatedToken = await acceptInvite(invitationToken);
+      if (updatedToken) {
+        await login(updatedToken);
+      }
+      navigate(ROUTES.AUTH_APPLICATION);
     } else {
-      setToken(token);
+      navigate(isFromVercel ? `${ROUTES.AUTH_APPLICATION}?${params.toString()}` : ROUTES.AUTH_APPLICATION);
     }
-
-    navigate(isFromVercel ? `/auth/application?${vercelQueryParams}` : ROUTES.AUTH_APPLICATION);
-
-    return true;
   };
 
   const {
@@ -124,7 +104,7 @@ export function SignUpForm({ invitationToken, email }: SignUpFormProps) {
 
   return (
     <>
-      <OAuth />
+      <OAuth invitationToken={invitationToken} />
       <form noValidate name="login-form" onSubmit={handleSubmit(onSubmit)}>
         <Input
           error={errors.fullName?.message}
@@ -194,7 +174,7 @@ export function SignUpForm({ invitationToken, email }: SignUpFormProps) {
           disabled={!accepted}
           mt={20}
           inherit
-          loading={isLoading || loadingAcceptInvite}
+          loading={isLoading || isAcceptInviteLoading}
           submit
           data-test-id="submitButton"
         >

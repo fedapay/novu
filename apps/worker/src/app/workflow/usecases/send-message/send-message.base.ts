@@ -9,6 +9,8 @@ import {
   ExecutionDetailsSourceEnum,
   ExecutionDetailsStatusEnum,
   IMessageTemplate,
+  ITenantDefine,
+  ProvidersIdEnum,
   SmsProviderIdEnum,
 } from '@novu/shared';
 
@@ -42,10 +44,19 @@ export abstract class SendMessageBase extends SendMessageType {
     super(messageRepository, createLogUsecase, executionLogRoute);
   }
 
-  protected async getIntegration(
-    selectIntegrationCommand: SelectIntegrationCommand
-  ): Promise<IntegrationEntity | undefined> {
-    const integration = await this.selectIntegration.execute(SelectIntegrationCommand.create(selectIntegrationCommand));
+  protected async getIntegration(params: {
+    id?: string;
+    providerId?: ProvidersIdEnum;
+    identifier?: string;
+    organizationId: string;
+    environmentId: string;
+    channelType: ChannelTypeEnum;
+    userId: string;
+    filterData: {
+      tenant: ITenantDefine | undefined;
+    };
+  }): Promise<IntegrationEntity | undefined> {
+    const integration = await this.selectIntegration.execute(SelectIntegrationCommand.create(params));
 
     if (!integration) {
       return;
@@ -57,7 +68,7 @@ export abstract class SendMessageBase extends SendMessageType {
         providerId: integration.providerId,
         environmentId: integration._environmentId,
         organizationId: integration._organizationId,
-        userId: selectIntegrationCommand.userId,
+        userId: params.userId,
       });
     }
 
@@ -140,16 +151,17 @@ export abstract class SendMessageBase extends SendMessageType {
   protected async initiateTranslations(environmentId: string, organizationId: string, locale: string | undefined) {
     try {
       if (process.env.NOVU_ENTERPRISE === 'true' || process.env.CI_EE_TEST === 'true') {
-        if (!require('@novu/ee-translation')?.TranslationsService) {
+        if (!require('@novu/ee-shared-services')?.TranslationsService) {
           throw new PlatformException('Translation module is not loaded');
         }
-        const service = this.moduleRef.get(require('@novu/ee-translation')?.TranslationsService, { strict: false });
+        const service = this.moduleRef.get(require('@novu/ee-shared-services')?.TranslationsService, { strict: false });
         const { namespaces, resources, defaultLocale } = await service.getTranslationsList(
           environmentId,
           organizationId
         );
 
-        await i18next.init({
+        const instance = i18next.createInstance();
+        await instance.init({
           resources,
           ns: namespaces,
           defaultNS: false,
@@ -168,6 +180,8 @@ export abstract class SendMessageBase extends SendMessageType {
             },
           },
         });
+
+        return instance;
       }
     } catch (e) {
       Logger.error(e, `Unexpected error while importing enterprise modules`, 'TranslationsService');

@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { GetStartedTabsViewsEnum } from './GetStartedTabsViewsEnum';
 import { OnboardingUseCasesTabsEnum } from './OnboardingUseCasesTabsEnum';
 
@@ -28,7 +29,7 @@ export interface OnboardingUseCase {
   steps: IOnboardingStep[];
   useCaseLink: string;
   type: OnboardingUseCasesTabsEnum;
-  Demo: React.ComponentType<UseCaseViewContext>;
+  Demo?: React.ComponentType<UseCaseViewContext>;
   BottomSection?: React.ComponentType<UseCaseViewContext>;
   views?: Partial<Record<GetStartedTabsViewsEnum, OnboardingUseCase>>;
 }

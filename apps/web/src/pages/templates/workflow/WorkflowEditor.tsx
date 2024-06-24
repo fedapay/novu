@@ -5,13 +5,14 @@ import { Link, Outlet, useLocation, useNavigate, useParams } from 'react-router-
 import { Node, NodeProps } from 'react-flow-renderer';
 import { useDidUpdate, useTimeout } from '@mantine/hooks';
 import { FilterPartTypeEnum, StepTypeEnum } from '@novu/shared';
-import { useAuthContext, useSegment } from '@novu/shared-web';
+import { useAuth } from '../../../hooks';
+import { useSegment } from '../../../components/providers/SegmentProvider';
 
 import { When } from '../../../components/utils/When';
 import type { IFlowEditorProps } from '../../../components/workflow';
 import { FlowEditor } from '../../../components/workflow';
 import { Bolt, Button, Settings } from '@novu/design-system';
-import { useEnvController } from '../../../hooks';
+import { useEnvironment } from '../../../hooks';
 import { channels } from '../../../utils/channels';
 import { errorMessage } from '../../../utils/notifications';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
@@ -51,14 +52,14 @@ const WorkflowEditor = () => {
   const [dragging, setDragging] = useState(false);
   const segment = useSegment();
   const { isOnboardingExperimentEnabled } = useOnboardingExperiment();
-  const { currentOrganization } = useAuthContext();
+  const { currentOrganization } = useAuth();
 
   const {
     control,
     trigger,
     formState: { errors, isDirty },
   } = useFormContext<IForm>();
-  const { readonly, chimera } = useEnvController({}, template?.chimera);
+  const { readonly, bridge } = useEnvironment({}, template?.bridge);
   const steps = useWatch({
     name: 'steps',
     control,
@@ -267,7 +268,7 @@ const WorkflowEditor = () => {
                 }}
               >
                 <Group>
-                  <When truthy={chimera}>
+                  <When truthy={bridge}>
                     <Bolt color="#4c6dd4" width="24px" height="24px" />
                   </When>
                   <NameInput />
@@ -293,7 +294,7 @@ const WorkflowEditor = () => {
                       }}
                       data-test-id="get-snippet-btn"
                     >
-                      {tagsIncludesOnboarding ? 'Test Notification Now' : 'Get Snippet'}
+                      Trigger Notification
                     </Button>
                     <Link data-test-id="settings-page" to="settings">
                       <Settings />

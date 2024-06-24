@@ -28,7 +28,7 @@ import {
   analyticsService,
   BulkCreateExecutionDetails,
   cacheService,
-  CalculateDelayService,
+  ComputeJobWaitDurationService,
   CreateExecutionDetails,
   createNestLoggingModuleOptions,
   CreateNotificationJobs,
@@ -49,6 +49,7 @@ import {
   StorageHelperService,
   storageService,
   UpdateSubscriber,
+  UpdateSubscriberChannel,
   UpdateTenant,
 } from '@novu/application-generic';
 
@@ -98,7 +99,7 @@ const PROVIDERS = [
   analyticsService,
   BulkCreateExecutionDetails,
   cacheService,
-  CalculateDelayService,
+  ComputeJobWaitDurationService,
   CreateExecutionDetails,
   CreateLog,
   CreateNotificationJobs,
@@ -114,6 +115,7 @@ const PROVIDERS = [
   StorageHelperService,
   storageService,
   UpdateSubscriber,
+  UpdateSubscriberChannel,
   UpdateTenant,
   GetTenant,
   CreateTenant,

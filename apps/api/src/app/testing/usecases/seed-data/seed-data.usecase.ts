@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { faker } from '@faker-js/faker';
 
 import { AuthService } from '@novu/application-generic';
 
@@ -15,9 +14,9 @@ export class SeedData {
   async execute(command: SeedDataCommand) {
     const data = {
       email: 'test-user-1@example.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: '123qwe!@#',
+      firstName: `John-${new Date().toISOString()}`,
+      lastName: `Doe-${new Date().toISOString()}`,
+      password: 'asd#Faf4fd',
       organizationName: 'Test Organization',
     };
 

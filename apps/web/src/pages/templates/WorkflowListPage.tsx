@@ -1,6 +1,6 @@
 import { ChangeEventHandler, useState } from 'react';
 import { ActionIcon, useMantineTheme, Group } from '@mantine/core';
-import { Link, useNavigate } from 'react-router-dom';
+import { createSearchParams, Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { format } from 'date-fns';
 import {
@@ -22,12 +22,12 @@ import {
 
 import {
   useTemplates,
-  useEnvController,
+  useEnvironment,
   useNotificationGroup,
   INotificationTemplateExtended,
   useDebouncedSearch,
 } from '../../hooks';
-import { ROUTES } from '../../constants/routes.enum';
+import { ROUTES } from '../../constants/routes';
 import { parseUrl } from '../../utils/routeUtils';
 import { TemplatesListNoData } from './TemplatesListNoData';
 import { useSegment } from '../../components/providers/SegmentProvider';
@@ -51,7 +51,7 @@ const columns: IExtendedColumn<INotificationTemplateExtended>[] = [
     Cell: withCellLoading(({ row: { original } }) => (
       <Group spacing={8}>
         <Group spacing={4}>
-          <When truthy={original.chimera}>
+          <When truthy={original.bridge}>
             <Tooltip label="Workflow is handled by Echo" position="top">
               <div>
                 <Bolt color="#4c6dd4" width="24px" height="24px" />
@@ -73,7 +73,7 @@ const columns: IExtendedColumn<INotificationTemplateExtended>[] = [
             <div>
               {original.workflowIntegrationStatus?.hasActiveIntegrations &&
               original.workflowIntegrationStatus?.hasPrimaryIntegrations !== false ? (
-                !original.chimera ? (
+                !original.bridge ? (
                   <Bolt color={colors.B40} width="24px" height="24px" />
                 ) : null
               ) : (
@@ -101,7 +101,7 @@ const columns: IExtendedColumn<INotificationTemplateExtended>[] = [
     width: 240,
     maxWidth: 240,
     Cell: withCellLoading(({ row: { original } }) =>
-      original.chimera ? null : <StyledTag data-test-id="category-label"> {original.notificationGroup?.name}</StyledTag>
+      original.bridge ? null : <StyledTag data-test-id="category-label"> {original.notificationGroup?.name}</StyledTag>
     ),
   },
   {
@@ -163,7 +163,7 @@ const columns: IExtendedColumn<INotificationTemplateExtended>[] = [
 
 function WorkflowListPage() {
   const segment = useSegment();
-  const { readonly } = useEnvController();
+  const { readonly } = useEnvironment();
   const { loading: areNotificationGroupLoading } = useNotificationGroup();
   const {
     templates,
@@ -216,7 +216,12 @@ function WorkflowListPage() {
   };
 
   function onRowClick(row) {
-    navigate(parseUrl(ROUTES.WORKFLOWS_EDIT_TEMPLATEID, { templateId: row.values._id }));
+    navigate({
+      pathname: parseUrl(ROUTES.WORKFLOWS_EDIT_TEMPLATEID, { templateId: row.values._id }),
+      search: createSearchParams({
+        type: row.original.type,
+      }).toString(),
+    });
   }
 
   const debouncedSearchChange = useDebouncedSearch(setSearchQueryParam);

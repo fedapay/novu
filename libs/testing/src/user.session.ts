@@ -3,7 +3,6 @@ import { faker } from '@faker-js/faker';
 import { SuperTest, Test } from 'supertest';
 import * as request from 'supertest';
 import * as defaults from 'superagent-defaults';
-import { v4 as uuid } from 'uuid';
 import {
   ApiServiceLevelEnum,
   EmailBlockTypeEnum,
@@ -35,6 +34,7 @@ import { CreateTemplatePayload } from './create-notification-template.interface'
 import { IntegrationService } from './integration.service';
 import { UserService } from './user.service';
 import { JobsService } from './jobs.service';
+import { TEST_USER_PASSWORD } from './constants';
 
 const EMAIL_BLOCK: IEmailBlock[] = [
   {
@@ -100,7 +100,7 @@ export class UserSession {
       email: `${card.firstName}_${card.lastName}_${faker.datatype.uuid()}@gmail.com`.toLowerCase(),
       profilePicture: `https://randomuser.me/api/portraits/men/${Math.floor(Math.random() * 60) + 1}.jpg`,
       tokens: [],
-      password: '123Qwe!@#',
+      password: TEST_USER_PASSWORD,
       showOnBoarding: true,
       showOnBoardingTour: options.showOnBoardingTour ? 0 : 2,
     };

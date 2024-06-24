@@ -29,8 +29,11 @@ import {
   ringCentralConfig,
   brevoSmsConfig,
   lamConfig,
+  whatsAppBusinessConfig,
+  eazySmsConfig,
+  mobishastraConfig,
 } from '../credentials';
-import { SmsProviderIdEnum } from '../provider.enum';
+import { ChatProviderIdEnum, SmsProviderIdEnum } from '../provider.enum';
 
 import { ChannelTypeEnum } from '../../../types';
 import { UTM_CAMPAIGN_QUERY_PARAM } from '../../../ui';
@@ -279,5 +282,21 @@ export const smsProviders: IProviderConfig[] = [
     credentials: lamConfig,
     docReference: 'https://developers.lafricamobile.com/docs/sms',
     logoFileName: { light: 'lam.png', dark: 'lam.png' },
+  },
+  {
+    id: SmsProviderIdEnum.EazySms,
+    displayName: `Eazy`,
+    channel: ChannelTypeEnum.SMS,
+    credentials: eazySmsConfig,
+    docReference: 'https://developers.eazy.im/#678805af-be7b-4487-93a4-c1007b7920f5',
+    logoFileName: { light: 'eazy-sms.svg', dark: 'eazy-sms.svg' },
+  },
+  {
+    id: SmsProviderIdEnum.Mobishastra,
+    displayName: 'Mobishastra',
+    channel: ChannelTypeEnum.SMS,
+    credentials: mobishastraConfig,
+    docReference: 'https://telkosh.com/mobishastra/',
+    logoFileName: { light: 'mobishastra.png', dark: 'mobishastra.png' },
   },
 ];

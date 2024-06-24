@@ -47,7 +47,7 @@ jobs:
       matrix:
         name: ['novu/worker-ee', 'novu/worker']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: ${{ contains (matrix.name,'-ee') }}
           token: ${{ secrets.SUBMODULES_TOKEN }}
@@ -63,6 +63,7 @@ jobs:
           github_token: ${{ secrets.GH_PACKAGES }}
           docker_name: ${{ matrix.name }}
           bullmq_secret: ${{ secrets.BULL_MQ_PRO_NPM_TOKEN }}
+          environment: dev
 
   deploy_dev_workers:
     needs: build_dev_worker

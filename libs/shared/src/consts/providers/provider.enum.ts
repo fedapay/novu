@@ -46,6 +46,8 @@ export enum CredentialsKeyEnum {
   imageUrl = 'imageUrl',
   state = 'state',
   externalLink = 'externalLink',
+  channelId = 'channelId',
+  phoneNumberIdentification = 'phoneNumberIdentification',
 }
 
 export enum EmailProviderIdEnum {
@@ -103,6 +105,8 @@ export enum SmsProviderIdEnum {
   RingCentral = 'ring-central',
   BrevoSms = 'brevo-sms',
   Lam = 'lam',
+  EazySms = 'eazy-sms',
+  Mobishastra = 'mobishastra',
 }
 
 export enum ChatProviderIdEnum {
@@ -115,6 +119,7 @@ export enum ChatProviderIdEnum {
   GrafanaOnCall = 'grafana-on-call',
   GetStream = 'getstream',
   RocketChat = 'rocket-chat',
+  WhatsAppBusiness = 'whatsapp-business',
 }
 
 export enum PushProviderIdEnum {

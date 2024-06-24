@@ -8,7 +8,7 @@ import Card from '../../../components/layout/components/Card';
 import { Timeline } from '../components/timeline/Timeline';
 import { AdditionInformationLink } from '../components/AdditionInformationLink';
 import { IOnboardingUseCaseViewContext, OnboardingUseCase } from '../consts/types';
-import { useSegment } from '@novu/shared-web';
+import { useSegment } from '../../../components/providers/SegmentProvider';
 
 export interface IGetStartedTabProps extends OnboardingUseCase, IOnboardingUseCaseViewContext {}
 
@@ -58,7 +58,7 @@ export function GetStartedTab({ setView, currentView, views, ...tabProps }: IGet
 
   return (
     <Grid align="stretch" justify={'space-between'}>
-      <Grid.Col span={3} mt={12} miw={'18.75rem'}>
+      <Grid.Col span={Demo ? 3 : 12} mt={12} miw={'18.75rem'}>
         {shouldShowBreadcrumb ? (
           <TabBreadcrumb onClick={() => setView(null)}>
             <ArrowLeft />
@@ -72,9 +72,11 @@ export function GetStartedTab({ setView, currentView, views, ...tabProps }: IGet
         {BottomSection ? <BottomSection setView={setView} /> : null}
         <StyledAdditionalInfoLink channel={type} href={useCaseLink} onClick={handleDocsLinkClick} />
       </Grid.Col>
-      <Grid.Col span={8}>
-        <Demo />
-      </Grid.Col>
+      {Demo ? (
+        <Grid.Col span={8}>
+          <Demo />
+        </Grid.Col>
+      ) : null}
     </Grid>
   );
 }

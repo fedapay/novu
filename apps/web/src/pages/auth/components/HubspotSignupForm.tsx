@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import decode from 'jwt-decode';
 import { useMantineColorScheme } from '@mantine/core';
 
+import { FeatureFlagsKeysEnum, ICreateOrganizationDto, IResponseError, ProductUseCases } from '@novu/shared';
 import { JobTitleEnum } from '@novu/shared';
-import type { ProductUseCases, IResponseError, ICreateOrganizationDto, IJwtPayload } from '@novu/shared';
-import { HubspotForm, useSegment } from '@novu/shared-web';
+import { useAuth, useFeatureFlag, useVercelIntegration, useVercelParams } from '../../../hooks';
+import { useSegment } from '../../../components/providers/SegmentProvider';
+import { HubspotForm } from '../../../ee/billing/components/HubspotForm';
 
 import { api } from '../../../api/api.client';
-import { useAuthContext } from '../../../components/providers/AuthProvider';
-import { useVercelIntegration, useVercelParams } from '../../../hooks';
-import { ROUTES } from '../../../constants/routes.enum';
+import { ROUTES } from '../../../constants/routes';
 import { HUBSPOT_FORM_IDS } from '../../../constants/hubspotForms';
 import SetupLoader from './SetupLoader';
 import { successMessage } from '@novu/design-system';
 
 export function HubspotSignupForm() {
   const [loading, setLoading] = useState<boolean>();
+  const isV2ExperienceEnabled = useFeatureFlag(FeatureFlagsKeysEnum.IS_V2_EXPERIENCE_ENABLED);
   const navigate = useNavigate();
-  const { setToken, token, currentUser } = useAuthContext();
+  const { login, currentUser, currentOrganization, environmentId } = useAuth();
   const { startVercelSetup } = useVercelIntegration();
   const { isFromVercel } = useVercelParams();
   const { colorScheme } = useMantineColorScheme();
@@ -33,20 +33,16 @@ export function HubspotSignupForm() {
   >((data: ICreateOrganizationDto) => api.post(`/v1/organizations`, data));
 
   useEffect(() => {
-    if (token) {
-      const userData = decode<IJwtPayload>(token);
-
-      if (userData.environmentId) {
+    if (currentUser) {
+      if (environmentId) {
         if (isFromVercel) {
           startVercelSetup();
 
           return;
         }
-
-        navigate(ROUTES.HOME);
       }
     }
-  }, [token, navigate, isFromVercel, startVercelSetup]);
+  }, [isFromVercel, startVercelSetup, currentUser, environmentId]);
 
   async function createOrganization(data: IOrganizationCreateForm) {
     const { organizationName, jobTitle, ...rest } = data;
@@ -55,16 +51,10 @@ export function HubspotSignupForm() {
 
     successMessage('Your Business trial has started');
 
+    // TODO: Move this into useAuth
     const organizationResponseToken = await api.post(`/v1/auth/organizations/${organization._id}/switch`, {});
 
-    setToken(organizationResponseToken);
-  }
-
-  function jwtHasKey(key: string) {
-    if (!token) return false;
-    const jwt = decode<IJwtPayload>(token);
-
-    return jwt && jwt[key];
+    login(organizationResponseToken, isV2ExperienceEnabled ? ROUTES.STUDIO_ONBOARDING : ROUTES.GET_STARTED);
   }
 
   const handleCreateOrganization = async (data: IOrganizationCreateForm) => {
@@ -74,7 +64,7 @@ export function HubspotSignupForm() {
 
     setLoading(true);
 
-    if (!jwtHasKey('organizationId')) {
+    if (!currentOrganization) {
       await createOrganization({ ...data });
     }
 
@@ -84,8 +74,7 @@ export function HubspotSignupForm() {
 
       return;
     }
-
-    navigate(ROUTES.GET_STARTED);
+    navigate(isV2ExperienceEnabled ? ROUTES.STUDIO_ONBOARDING : ROUTES.GET_STARTED);
   };
 
   if (!currentUser || loading) {
@@ -99,15 +88,15 @@ export function HubspotSignupForm() {
           lastname: currentUser?.lastName as string,
           email: currentUser?.email as string,
 
-          company: '',
+          company: (currentOrganization?.name as string) || '',
           role___onboarding: '',
           heard_about_novu: '',
           use_case___onboarding: '',
           role___onboarding__other_: '',
           heard_about_novu__other_: '',
         }}
-        readonlyProperties={['email']}
-        focussedProperty="company"
+        readonlyProperties={currentOrganization ? ['email', 'company'] : ['email']}
+        focussedProperty={currentOrganization ? 'role___onboarding' : 'company'}
         onFormSubmitted={($form, values) => {
           const submissionValues = values?.submissionValues as unknown as {
             company: string;

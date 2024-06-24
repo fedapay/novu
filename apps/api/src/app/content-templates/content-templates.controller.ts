@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { format } from 'date-fns';
 import * as i18next from 'i18next';
@@ -11,13 +11,13 @@ import {
   CompileInAppTemplateCommand,
   CompileStepTemplate,
   CompileStepTemplateCommand,
-  UserAuthGuard,
 } from '@novu/application-generic';
-import { IEmailBlock, IJwtPayload, MessageTemplateContentType, IMessageCTA } from '@novu/shared';
+import { IEmailBlock, IMessageCTA, MessageTemplateContentType, UserSessionData } from '@novu/shared';
 import { UserSession } from '../shared/framework/user.decorator';
+import { UserAuthentication } from '../shared/framework/swagger/api.key.security';
 
 @Controller('/content-templates')
-@UseGuards(UserAuthGuard)
+@UserAuthentication()
 @ApiExcludeController()
 export class ContentTemplatesController {
   constructor(
@@ -29,7 +29,7 @@ export class ContentTemplatesController {
 
   @Post('/preview/email')
   public previewEmail(
-    @UserSession() user: IJwtPayload,
+    @UserSession() user: UserSessionData,
     @Body('content') content: string | IEmailBlock[],
     @Body('contentType') contentType: MessageTemplateContentType,
     @Body('payload') payload: any,
@@ -55,7 +55,7 @@ export class ContentTemplatesController {
 
   @Post('/preview/in-app')
   public previewInApp(
-    @UserSession() user: IJwtPayload,
+    @UserSession() user: UserSessionData,
     @Body('content') content: string,
     @Body('payload') payload: any,
     @Body('cta') cta: IMessageCTA,
@@ -77,7 +77,7 @@ export class ContentTemplatesController {
   // TODO: refactor this to use params and single endpoint to manage all the channels
   @Post('/preview/sms')
   public previewSms(
-    @UserSession() user: IJwtPayload,
+    @UserSession() user: UserSessionData,
     @Body('content') content: string,
     @Body('payload') payload: any,
     @Body('locale') locale?: string
@@ -97,7 +97,7 @@ export class ContentTemplatesController {
 
   @Post('/preview/chat')
   public previewChat(
-    @UserSession() user: IJwtPayload,
+    @UserSession() user: UserSessionData,
     @Body('content') content: string,
     @Body('payload') payload: any,
     @Body('locale') locale?: string
@@ -117,7 +117,7 @@ export class ContentTemplatesController {
 
   @Post('/preview/push')
   public previewPush(
-    @UserSession() user: IJwtPayload,
+    @UserSession() user: UserSessionData,
     @Body('content') content: string,
     @Body('title') title: string,
     @Body('payload') payload: any,
@@ -140,16 +140,16 @@ export class ContentTemplatesController {
   protected async initiateTranslations(environmentId: string, organizationId: string, locale: string | undefined) {
     try {
       if (process.env.NOVU_ENTERPRISE === 'true' || process.env.CI_EE_TEST === 'true') {
-        if (!require('@novu/ee-translation')?.TranslationsService) {
+        if (!require('@novu/ee-shared-services')?.TranslationsService) {
           throw new ApiException('Translation module is not loaded');
         }
-        const service = this.moduleRef.get(require('@novu/ee-translation')?.TranslationsService, { strict: false });
+        const service = this.moduleRef.get(require('@novu/ee-shared-services')?.TranslationsService, { strict: false });
         const { namespaces, resources, defaultLocale } = await service.getTranslationsList(
           environmentId,
           organizationId
         );
-
-        await i18next.init({
+        const instance = i18next.createInstance();
+        await instance.init({
           resources,
           ns: namespaces,
           defaultNS: false,
@@ -168,6 +168,8 @@ export class ContentTemplatesController {
             },
           },
         });
+
+        return instance;
       }
     } catch (e) {
       Logger.error(e, `Unexpected error while importing enterprise modules`, 'TranslationsService');

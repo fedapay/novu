@@ -1,4 +1,4 @@
-import { ROUTES } from '@novu/shared-web';
+import { ROUTES } from '../../../constants/routes';
 
 import { GetStartedLink, StepDescription, StepText } from './shared';
 import { OnboardingUseCase } from './types';
@@ -21,7 +21,12 @@ export const TranslationUseCaseConst: OnboardingUseCase = {
             <StepText>
               Novu has set up trial email and SMS providers for you. To expand your options, add more providers in the
             </StepText>
-            <GetStartedLink href={ROUTES.INTEGRATIONS_CREATE} target="_blank" rel="noopener noreferrer">
+            <GetStartedLink
+              event="Integration store (translation)"
+              href={ROUTES.INTEGRATIONS_CREATE}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {' '}
               Integration store
             </GetStartedLink>
@@ -41,6 +46,7 @@ export const TranslationUseCaseConst: OnboardingUseCase = {
               href={ROUTES.TRANSLATIONS}
               target="_blank"
               rel="noopener noreferrer"
+              event="Translations page"
             />
             <StepText>.</StepText>
           </StepDescription>

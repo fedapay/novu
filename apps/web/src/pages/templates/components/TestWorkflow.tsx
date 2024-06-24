@@ -11,13 +11,13 @@ import { IUserEntity, INotificationTriggerVariable } from '@novu/shared';
 import { Button, colors, inputStyles } from '@novu/design-system';
 
 import { errorMessage, successMessage } from '../../../utils/notifications';
-import { useAuthContext } from '../../../components/providers/AuthProvider';
+import { useAuth } from '../../../hooks/useAuth';
 import { getSubscriberValue, getPayloadValue } from './TriggerSnippetTabs';
 import { testTrigger } from '../../../api/notification-templates';
 import { ExecutionDetailsModalWrapper } from './ExecutionDetailsModalWrapper';
 import { TriggerSegmentControl } from './TriggerSegmentControl';
 import { WorkflowSidebar } from './WorkflowSidebar';
-import { useSegment } from '@novu/shared-web';
+import { useSegment } from '../../../components/providers/SegmentProvider';
 import { useOnboardingExperiment } from '../../../hooks/useOnboardingExperiment';
 import { OnBoardingAnalyticsEnum } from '../../quick-start/consts';
 
@@ -25,7 +25,7 @@ const makeToValue = (subscriberVariables: INotificationTriggerVariable[], curren
   const subsVars = getSubscriberValue(
     subscriberVariables,
     (variable) =>
-      (currentUser && currentUser[variable.name === 'subscriberId' ? 'id' : variable.name]) || '<REPLACE_WITH_DATA>'
+      (currentUser && currentUser[variable.name === 'subscriberId' ? '_id' : variable.name]) || '<REPLACE_WITH_DATA>'
   );
 
   return JSON.stringify(subsVars, null, 2);
@@ -41,7 +41,7 @@ function subscriberExist(subscriberVariables: INotificationTriggerVariable[]) {
 
 export function TestWorkflow({ trigger }) {
   const [transactionId, setTransactionId] = useState<string>('');
-  const { currentUser, currentOrganization } = useAuthContext();
+  const { currentUser, currentOrganization } = useAuth();
   const { mutateAsync: triggerTestEvent, isLoading } = useMutation(testTrigger);
   const [executionModalOpened, { close: closeExecutionModal, open: openExecutionModal }] = useDisclosure(false);
 
@@ -59,6 +59,7 @@ export function TestWorkflow({ trigger }) {
 
     return [{ name: 'subscriberId' }, ...(trigger?.subscriberVariables || [])];
   }, [trigger]);
+
   const variables = useMemo(() => [...(trigger?.variables || [])], [trigger]);
   const reservedVariables = useMemo(() => [...(trigger?.reservedVariables || [])], [trigger]);
 

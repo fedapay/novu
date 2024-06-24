@@ -1095,16 +1095,6 @@ export const ringCentralConfig: IConfigCredentials[] = [
   ...smsConfigBase,
 ];
 
-export const brevoSmsConfig: IConfigCredentials[] = [
-  {
-    key: CredentialsKeyEnum.ApiKey,
-    displayName: 'API Key',
-    type: 'string',
-    required: true,
-  },
-  ...smsConfigBase,
-];
-
 export const lamConfig: IConfigCredentials[] = [
   {
     key: CredentialsKeyEnum.AccountId,
@@ -1124,4 +1114,71 @@ export const lamConfig: IConfigCredentials[] = [
     type: 'string',
     required: true,
   },
+];
+
+export const brevoSmsConfig: IConfigCredentials[] = [
+  {
+    key: CredentialsKeyEnum.ApiKey,
+    displayName: 'API Key',
+    type: 'string',
+    required: true,
+  },
+  ...smsConfigBase,
+];
+
+export const eazySmsConfig: IConfigCredentials[] = [
+  {
+    key: CredentialsKeyEnum.ApiKey,
+    displayName: 'API Key',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.channelId,
+    displayName: 'SMS Channel Id',
+    type: 'string',
+    required: true,
+    description: 'Your SMS Channel Id',
+  },
+];
+
+export const whatsAppBusinessConfig: IConfigCredentials[] = [
+  {
+    key: CredentialsKeyEnum.ApiToken,
+    displayName: 'Access API token',
+    description: 'Your WhatsApp Business access API token',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.phoneNumberIdentification,
+    displayName: 'Phone Number Identification',
+    description: 'Your WhatsApp Business phone number identification',
+    type: 'string',
+    required: true,
+  },
+];
+
+export const mobishastraConfig: IConfigCredentials[] = [
+  {
+    key: CredentialsKeyEnum.BaseUrl,
+    displayName: 'Base URL',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.User,
+    displayName: 'Username',
+    type: 'string',
+    description: 'Username provided by Mobishatra',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.Password,
+    displayName: 'Password',
+    type: 'string',
+    description: ' provided by Mobishastra',
+    required: true,
+  },
+  ...smsConfigBase,
 ];
