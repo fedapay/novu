@@ -1,6 +1,6 @@
 import { ChannelTypeEnum, ICredentials } from '@novu/shared';
 import { BaseSmsHandler } from './base.handler';
-import { LamSmsProvider } from '@novu/lam';
+import { LamSmsProvider } from '@novu/providers';
 
 export class LamSmsHandler extends BaseSmsHandler {
   constructor() {

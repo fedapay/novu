@@ -644,7 +644,8 @@
     "Nimma",
     "jpath",
     "vstack",
-    "liquidjs"
+    "liquidjs",
+    "lam"
   ],
   "flagWords": [],
   "patterns": [
